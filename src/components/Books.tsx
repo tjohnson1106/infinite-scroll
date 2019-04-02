@@ -1,8 +1,21 @@
 import React from "react";
-import { List, ListItem, Paper, CircularProgress } from "@material-ui/core";
+import {
+  List,
+  ListItem,
+  Paper,
+  CircularProgress,
+  ListItemText,
+  ListItemIcon,
+  IconButton
+} from "@material-ui/core";
 import { Waypoint } from "react-waypoint";
 
-import { useBooksQuery } from "../generated/ApolloHooks";
+import {
+  useBooksQuery,
+  useRemoveBookMutation,
+  BooksQuery,
+  BooksDocument
+} from "../generated/ApolloHooks";
 import "../App.css";
 
 const Books = () => {
@@ -11,6 +24,8 @@ const Books = () => {
     variables: { first: 50 },
     notifyOnNetworkStatusChange: true
   });
+
+  const removeBook = useRemoveBookMutation();
 
   if (!data || !data.books) {
     // also implementing as network status check
@@ -44,7 +59,36 @@ const Books = () => {
           >
             {data.books.books.map((x, i) => (
               <React.Fragment key={x.id}>
-                <ListItem key={x.id}>{x.title}</ListItem>
+                <ListItem>
+                  <ListItemText>{x.title}</ListItemText>
+                </ListItem>
+                <ListItemIcon>
+                  <IconButton
+                    onClick={() =>
+                      removeBook({
+                        variables: { id: x.id },
+                        update: (store) => {
+                          const data = store.readQuery<BooksQuery>({
+                            query: BooksDocument
+                          });
+                          store.writeQuery<BooksQuery>({
+                            query: BooksDocument,
+                            data: {
+                              books: {
+                                __typename: "BooksResponse",
+                                books: data!.books.books.filter(
+                                  (y) => y.id !== x.id
+                                ),
+                                hasNextPage: data!.books.hasNextPage
+                              }
+                            }
+                          });
+                        }
+                      })
+                    }
+                  />
+                </ListItemIcon>
+
                 {/* when 10 items away from the bottom and visible -> fetch more -> Waypoint */}
                 {i === data.books.books.length - 10 && (
                   <Waypoint
