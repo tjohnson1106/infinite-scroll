@@ -1,9 +1,13 @@
-.root {
-  background-color: #fafafa;
+html * {
+  font-family: Helvetica, sans-serif, Arial;
+}
+
+/* .root {
+  background-color: #3a3232;
 }
 
 .paper-wrapper {
   max-width: 400;
-  margin: "auto";
+  margin: auto;
   padding: 10;
-}
+} */
