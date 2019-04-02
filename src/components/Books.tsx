@@ -45,6 +45,7 @@ const Books = () => {
             {data.books.books.map((x, i) => (
               <React.Fragment key={x.id}>
                 <ListItem key={x.id}>{x.title}</ListItem>
+                {/* when 10 items away from the bottom and visible -> fetch more -> Waypoint */}
                 {i === data.books.books.length - 10 && (
                   <Waypoint
                     onEnter={() =>
