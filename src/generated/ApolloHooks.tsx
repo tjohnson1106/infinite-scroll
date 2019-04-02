@@ -60,6 +60,15 @@ export type BooksQuery = { __typename?: "Query" } & {
     };
 };
 
+export type RemoveBookMutationVariables = {
+  id: Scalars["String"];
+};
+
+export type RemoveBookMutation = { __typename?: "Mutation" } & Pick<
+  Mutation,
+  "removeBook"
+>;
+
 import gql from "graphql-tag";
 import * as ReactApolloHooks from "react-apollo-hooks";
 
@@ -83,4 +92,21 @@ export function useBooksQuery(
     BooksDocument,
     baseOptions
   );
+}
+export const RemoveBookDocument = gql`
+  mutation RemoveBook($id: String!) {
+    removeBook(id: $id)
+  }
+`;
+
+export function useRemoveBookMutation(
+  baseOptions?: ReactApolloHooks.MutationHookOptions<
+    RemoveBookMutation,
+    RemoveBookMutationVariables
+  >
+) {
+  return ReactApolloHooks.useMutation<
+    RemoveBookMutation,
+    RemoveBookMutationVariables
+  >(RemoveBookDocument, baseOptions);
 }
