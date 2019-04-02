@@ -1,5 +1,5 @@
 import React from "react";
-import { List, ListItem, Paper } from "@material-ui/core";
+import { List, ListItem, Paper, CircularProgress } from "@material-ui/core";
 import { Waypoint } from "react-waypoint";
 
 import { useBooksQuery } from "../generated/ApolloHooks";
@@ -7,12 +7,14 @@ import "../App.css";
 
 const Books = () => {
   // implement fetch more
-  const { data, fetchMore } = useBooksQuery({
-    variables: { first: 50 }
+  const { data, fetchMore, networkStatus } = useBooksQuery({
+    variables: { first: 50 },
+    notifyOnNetworkStatusChange: true
   });
 
   if (!data || !data.books) {
-    return <div> ...Loading </div>;
+    // also implementing as network status check
+    return <CircularProgress />;
   }
 
   return (
@@ -76,6 +78,8 @@ const Books = () => {
               </React.Fragment>
             ))}
           </List>
+          {/* on scroll -> check apollo dev tools */}
+          {networkStatus === 3 && <CircularProgress />}
         </Paper>
       </div>
     </div>
