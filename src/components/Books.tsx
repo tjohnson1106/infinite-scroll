@@ -6,7 +6,8 @@ import { useBooksQuery } from "../generated/ApolloHooks";
 import "../App.css";
 
 const Books = () => {
-  const { data } = useBooksQuery({
+  // implement fetch more
+  const { data, fetchMore } = useBooksQuery({
     variables: { first: 50 }
   });
 
@@ -43,7 +44,34 @@ const Books = () => {
               <React.Fragment key={x.id}>
                 <ListItem key={x.id}>{x.title}</ListItem>
                 {i === data.books.books.length - 10 && (
-                  <Waypoint onEnter={() => console.log(i)} />
+                  <Waypoint
+                    onEnter={() =>
+                      fetchMore({
+                        variables: {
+                          first: 50,
+                          cursor:
+                            data.books.books[data.books.books.length - 1].id
+                        },
+                        // merge into existing data
+                        updateQuery: (pv, { fetchMoreResult }) => {
+                          if (!fetchMoreResult) {
+                            return pv;
+                          }
+
+                          return {
+                            books: {
+                              __typename: "BooksResponse",
+                              books: [
+                                ...pv.books.books,
+                                ...fetchMoreResult.books.books
+                              ],
+                              hasNextPage: fetchMoreResult.books.hasNextPage
+                            }
+                          };
+                        }
+                      })
+                    }
+                  />
                 )}
               </React.Fragment>
             ))}
